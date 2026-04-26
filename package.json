@@ -1,0 +1,12 @@
+{
+  "name": "stock-debate-tools",
+  "version": "1.0.0",
+  "description": "Stock debate generator — fetch live data and format 6-analyst debates for any ticker",
+  "main": "fetch-stock-data.js",
+  "scripts": {
+    "debate": "node fetch-stock-data.js"
+  },
+  "dependencies": {
+    "yahoo-finance2": "^3.14.0"
+  }
+}
