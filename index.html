@@ -5,345 +5,338 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stock Debate — 6 Analysts, Any Ticker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
-body{background:#0a0a0a;color:#f0f0f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem}
-.container{max-width:720px;width:100%}
-h1{font-size:2.5rem;font-weight:800;margin-bottom:0.3rem;background:linear-gradient(135deg,#e8001c,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sub{color:#888;margin-bottom:2rem;font-size:0.9rem}
-.search-box{display:flex;gap:8px;margin-bottom:2rem}
-.search-box input{flex:1;padding:12px 16px;border:2px solid #333;border-radius:8px;background:#111;color:#f0f0f0;font-size:1.1rem;font-weight:600;font-family:'Space Mono',monospace;text-transform:uppercase}
-.search-box input:focus{border-color:#e8001c;outline:none}
-.search-box button{padding:12px 24px;background:#e8001c;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;transition:all 0.2s}
-.search-box button:hover{background:#ffd700;color:#0a0a0a;transform:scale(1.05)}
-.search-box button:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-.quick-links{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2rem}
-.quick-links button{padding:6px 14px;background:#1a1a1a;border:1px solid #333;border-radius:20px;color:#aaa;cursor:pointer;font-size:0.8rem;transition:all 0.2s}
-.quick-links button:hover{border-color:#e8001c;color:#e8001c}
-.result{display:none;margin-top:1rem}
-.result.active{display:block}
-.card{background:#111;border:1px solid #333;border-radius:12px;padding:1.5rem;margin-bottom:1rem;animation:fadeIn 0.3s ease}
-@keyframes fadeIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-.card h2{font-size:1.5rem;margin-bottom:0.2rem}
-.card .subtitle{color:#888;font-size:0.85rem;margin-bottom:1rem}
-.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
-.metric{background:#1a1a1a;padding:10px;border-radius:6px}
-.metric .label{color:#888;font-size:0.75rem;font-family:'Space Mono',monospace}
-.metric .value{color:#f0f0f0;font-size:1.1rem;font-weight:700}
-.metric .value.green{color:#4ade80}
-.metric .value.red{color:#e8001c}
-.metric .value.yellow{color:#ffd700}
-.analyst{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:1rem;margin-bottom:0.8rem}
-.analyst .name{font-weight:700;font-size:1rem;margin-bottom:0.3rem}
-.analyst .role{color:#888;font-size:0.75rem;font-family:'Space Mono',monospace}
-.analyst .arg{font-size:0.85rem;line-height:1.5;margin:0.5rem 0;color:#ccc}
-.analyst .verdict{display:inline-block;padding:2px 10px;border-radius:4px;font-size:0.8rem;font-weight:700}
-.verdict.buy{background:#166534;color:#4ade80}
-.verdict.hold{background:#713f12;color:#fbbf24}
-.verdict.sell{background:#7f1d1d;color:#f87171}
-.panel-vote{display:flex;gap:12px;justify-content:center;margin:1rem 0}
-.vote-block{text-align:center;padding:10px 20px;border-radius:8px;background:#1a1a1a;flex:1}
-.vote-block .count{font-size:1.8rem;font-weight:800}
-.vote-block .label{font-size:0.75rem;color:#888;font-family:'Space Mono',monospace}
-.vote-block.buy .count{color:#4ade80}
-.vote-block.hold .count{color:#fbbf24}
-.vote-block.sell .count{color:#f87171}
-.final{text-align:center;padding:1rem;background:#1a1a1a;border-radius:8px;margin-top:1rem}
-.final .verdict-text{font-size:1.3rem;font-weight:800}
-.final .detail{color:#888;font-size:0.85rem;margin-top:0.3rem}
-.loading{display:none;text-align:center;padding:2rem}
+*{margin:0;padding:0;box-sizing:border-box}
+:root {
+  --bg: #0b0d0f; --card: #13161a; --card2: #1a1f26;
+  --border: #1e2630; --border2: #2a3545;
+  --text: #e8edf2; --text2: #7b8799;
+  --accent: #e8001c; --accent2: #ff6b35;
+  --green: #00c853; --greenBg: #00c85312;
+  --red: #e8001c; --redBg: #e8001c12;
+  --yellow: #ffd600; --yellowBg: #ffd60012;
+  --blue: #2979ff; --blueBg: #2979ff12;
+  --gradient: linear-gradient(135deg, #e8001c, #ff6b35);
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem}
+.container{max-width:800px;width:100%}
+.header{text-align:center;margin-bottom:2.5rem}
+.header h1{font-size:2.8rem;font-weight:900;letter-spacing:-1px;line-height:1}
+.header h1 .g{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header h1 .w{color:var(--text)}
+.header .sub{color:var(--text2);font-size:0.9rem;margin-top:0.4rem;font-weight:300}
+.header .sub .badge{display:inline-block;background:var(--card2);border:1px solid var(--border);padding:2px 10px;border-radius:4px;font-size:0.65rem;font-weight:600;color:var(--text2);font-family:'Space Mono',monospace;margin-left:4px}
+.search-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
+.search-box{display:flex;gap:10px}
+.search-box .iw{flex:1;position:relative}
+.search-box .iw .ic{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text2)}
+.search-box input{width:100%;padding:14px 14px 14px 42px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:1.1rem;font-weight:700;font-family:'Space Mono',monospace;text-transform:uppercase;transition:all 0.2s}
+.search-box input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--redBg)}
+.search-box input::placeholder{color:var(--text2);opacity:0.35;font-weight:400}
+.search-box button{padding:14px 28px;background:var(--gradient);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.95rem;transition:all 0.25s;white-space:nowrap;font-family:'Inter',sans-serif}
+.search-box button:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(232,0,28,0.35)}
+.search-box button:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.quick-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2rem;justify-content:center}
+.quick-pill{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:100px;color:var(--text2);cursor:pointer;font-size:0.82rem;font-weight:600;transition:all 0.2s;font-family:'Inter',sans-serif}
+.quick-pill:hover{border-color:var(--accent);color:var(--accent);background:var(--redBg);transform:translateY(-1px)}
+.quick-pill .d{width:5px;height:5px;border-radius:50%;display:inline-block}
+.loading{display:none;text-align:center;padding:3rem}
 .loading.active{display:block}
-.loading .spinner{display:inline-block;width:24px;height:24px;border:3px solid #333;border-top-color:#e8001c;border-radius:50%;animation:spin 0.8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.error{display:none;padding:1rem;background:#1a1a1a;border:1px solid #e8001c;border-radius:8px;color:#f87171;margin-top:1rem}
-.error.active{display:block}
-.footer{margin-top:3rem;text-align:center;color:#555;font-size:0.75rem;font-family:'Space Mono',monospace}
-@media(max-width:600px){.metrics{grid-template-columns:1fr 1fr;gap:6px}.search-box{flex-direction:column}}
+.loading .lb{width:200px;height:3px;background:var(--card2);border-radius:3px;margin:1rem auto;overflow:hidden}
+.loading .lb .f{width:40%;height:100%;background:var(--gradient);border-radius:3px;animation:ls 1s ease-in-out infinite}
+@keyframes ls{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+.loading .t{color:var(--text2);font-size:0.85rem;font-weight:300}
+.result{display:none}
+.result.active{display:block;animation:fu 0.4s ease}
+@keyframes fu{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
+.th{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem 2rem;margin-bottom:1rem}
+.th-t{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.th-l{flex:1}
+.th-tk{font-size:1.8rem;font-weight:800;display:flex;align-items:center;gap:8px}
+.th-tk .m{font-size:0.65rem;background:var(--card2);border:1px solid var(--border);padding:3px 10px;border-radius:100px;font-weight:600;color:var(--text2)}
+.th-d{color:var(--text2);font-size:0.8rem;font-weight:300;margin-top:2px}
+.th-p{text-align:right}
+.th-p .pv{font-size:2.8rem;font-weight:900;letter-spacing:-2px;line-height:1}
+.th-p .ch{font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:4px;justify-content:flex-end;margin-top:2px}
+.th-p .ch.up{color:var(--green)}
+.th-p .ch.down{color:var(--red)}
+.th-m{display:flex;gap:8px;flex-wrap:wrap;margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--border)}
+.th-mi{font-size:0.73rem;color:var(--text2);display:flex;align-items:center;gap:4px}
+.th-mi strong{color:var(--text);font-weight:600}
+
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.mc{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center;transition:all 0.2s}
+.mc:hover{border-color:var(--border2);transform:translateY(-1px)}
+.mc .ml{font-size:0.65rem;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.5px}
+.mc .mv{font-size:1rem;font-weight:700;margin-top:3px;font-family:'Space Mono',monospace}
+.mc .mv.g{color:var(--green)}.mc .mv.r{color:var(--red)}.mc .mv.y{color:var(--yellow)}.mc .mv.a{color:var(--accent)}
+
+.bb{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.bb-item{padding:12px 14px;border-radius:10px;font-size:0.8rem;line-height:1.5}
+.bb-item.bull{background:var(--greenBg);border:1px solid rgba(0,200,83,0.12)}
+.bb-item.bear{background:var(--redBg);border:1px solid rgba(232,0,28,0.12)}
+.bb-item .bl{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.bb-item.bull .bl{color:var(--green)}.bb-item.bear .bl{color:var(--red)}
+.bb-item .bt{color:var(--text2);font-weight:300}
+
+.ws{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:1.5rem}
+.ws .wl{font-size:0.72rem;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:5px}
+.ws .wr{padding:3px 10px;border-radius:4px;font-size:0.8rem;font-weight:700;text-transform:capitalize;background:var(--blueBg);color:var(--blue);border:1px solid rgba(41,121,255,0.2)}
+.ws .wt{font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;color:var(--text)}
+.ws .wn{color:var(--text2);font-size:0.72rem}
+
+.asc{margin-bottom:1rem}
+.ac{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:8px;transition:all 0.2s}
+.ac:hover{border-color:var(--border2)}
+.ach{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem}
+.acl{display:flex;align-items:center;gap:10px}
+.acav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:2px solid var(--border);flex-shrink:0}
+.acni{font-size:0.95rem;font-weight:700}
+.acro{font-size:0.7rem;color:var(--text2);font-weight:300}
+.acv{font-size:0.8rem;font-weight:700;padding:4px 12px;border-radius:6px}
+.acv.b{background:var(--greenBg);color:var(--green);border:1px solid rgba(0,200,83,0.2)}
+.acv.h{background:var(--yellowBg);color:var(--yellow);border:1px solid rgba(255,214,0,0.2)}
+.acv.s{background:var(--redBg);color:var(--red);border:1px solid rgba(232,0,28,0.2)}
+.acb{color:var(--text2);font-size:0.85rem;line-height:1.6;font-weight:300}
+.acb strong{color:var(--text);font-weight:600}
+
+.ps{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;text-align:center}
+.ps h3{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.pv{display:flex;gap:12px;justify-content:center;margin-bottom:1rem}
+.pvb{flex:1;padding:14px;border-radius:10px;background:var(--card2);border:1px solid var(--border)}
+.pvb .pvc{font-size:2.2rem;font-weight:900;line-height:1}
+.pvb .pvl{font-size:0.7rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.pvb.b .pvc{color:var(--green)}.pvb.h .pvc{color:var(--yellow)}.pvb.s .pvc{color:var(--red)}
+.pf{padding-top:1rem;border-top:1px solid var(--border)}
+.pf .fv{font-size:1.3rem;font-weight:800}
+.pf .fv.buy{color:var(--green)}.pf .fv.hold{color:var(--yellow)}.pf .fv.sell{color:var(--red)}
+.pf .fd{color:var(--text2);font-size:0.8rem;font-weight:300;margin-top:4px}
+
+.error{display:none;background:var(--card);border:1px solid var(--accent);border-radius:12px;padding:1.5rem;text-align:center;margin-top:1rem}
+.error.active{display:block;animation:fu 0.3s ease}
+.error .ei{font-size:2rem;margin-bottom:0.5rem}
+.error .et{color:var(--text2);font-size:0.9rem;font-weight:300}
+
+.footer{margin-top:3rem;text-align:center;padding:1.5rem 0}
+.footer .fd{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:1rem}
+.footer p{color:var(--text2);font-size:0.7rem;font-weight:300;font-family:'Space Mono',monospace}
+
+@media(max-width:640px){
+  body{padding:1rem 0.75rem}
+  .header h1{font-size:2rem}
+  .search-box{flex-direction:column}
+  .search-box button{padding:12px;width:100%}
+  .th-t{flex-direction:column}
+  .th-p{text-align:left;width:100%}
+  .th-p .ch{justify-content:flex-start}
+  .mg{grid-template-columns:repeat(2,1fr);gap:6px}
+  .bb{grid-template-columns:1fr}
+  .ws{gap:8px}
+}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>📊 STOCK DEBATE</h1>
-<div class="sub">Live data + 6-analyst panel for any ticker</div>
 
-<div class="search-box">
-  <input type="text" id="tickerInput" placeholder="Enter ticker..." maxlength="8">
-  <button id="debateBtn" onclick="runDebate()">DEBATE ▸</button>
+<div class="header">
+  <h1><span class="w">STOCK</span> <span class="g">DEBATE</span></h1>
+  <div class="sub">6 investors. 1 ticker. Live data.<span class="badge">BETA</span></div>
 </div>
 
-<div class="quick-links">
-  <button onclick="quick('AAPL')">AAPL</button>
-  <button onclick="quick('MSFT')">MSFT</button>
-  <button onclick="quick('NVDA')">NVDA</button>
-  <button onclick="quick('TSLA')">TSLA</button>
-  <button onclick="quick('META')">META</button>
-  <button onclick="quick('GOOGL')">GOOGL</button>
-  <button onclick="quick('AMZN')">AMZN</button>
+<div class="search-wrap">
+  <form class="search-box" onsubmit="event.preventDefault();runDebate()">
+    <div class="iw"><span class="ic">🔍</span>
+      <input type="text" id="ti" placeholder="Search any ticker..." maxlength="8" autofocus>
+    </div>
+    <button type="submit" id="db">→ Debate</button>
+  </form>
 </div>
 
-<div class="loading" id="loading">
-  <div class="spinner"></div>
-  <p style="margin-top:1rem;color:#888;font-size:0.85rem">Fetching live data...</p>
-</div>
-
-<div class="result" id="result"></div>
-<div class="error" id="error"></div>
-<div class="footer">TOUGE LEGENDS © AKINA SPEED STARS · Data via Yahoo Finance</div>
+<div class="quick-wrap" id="qp"></div>
+<div class="loading" id="ld"><div style="font-size:1.5rem">📊</div><div class="lb"><div class="f"></div></div><div class="t">Pulling live data from Yahoo Finance...</div></div>
+<div class="result" id="r"></div>
+<div class="error" id="er"><div class="ei">⚠️</div><div class="et" id="ert"></div></div>
+<div class="footer"><div class="fd"></div><p>Data via Yahoo Finance · Not financial advice</p></div>
 </div>
 
 <script>
-const TICKER_CACHE = {};
+const Q = [
+  {t:'AAPL',n:'Apple',c:'g'},{t:'MSFT',n:'Microsoft',c:'b'},{t:'NVDA',n:'NVIDIA',c:'g'},
+  {t:'GOOGL',n:'Alphabet',c:'b'},{t:'AMZN',n:'Amazon',c:'y'},{t:'META',n:'Meta',c:'b'},
+  {t:'TSLA',n:'Tesla',c:'r'},{t:'KO',n:'Coca-Cola',c:'r'},{t:'JNJ',n:'J&J',c:'g'},
+  {t:'BRK.B',n:'Berkshire',c:'y'}
+];
+const MOATS={'AAPL':'Wide','MSFT':'Wide','GOOGL':'Wide','AMZN':'Wide','META':'Narrow','NVDA':'Wide','TSLA':'Narrow','KO':'Wide','PG':'Wide','JNJ':'Wide','V':'Wide','MA':'Wide','PEP':'Wide','COST':'Wide','WMT':'Wide','CSCO':'Narrow','INTC':'Narrow','ABBV':'Wide','UNH':'Wide','HD':'Wide','NKE':'Wide','DIS':'Narrow','BRK.B':'Wide'};
+const CC={'g':'#00c853','b':'#2979ff','y':'#ffd600','r':'#e8001c'};
 
-function quick(t) {
-  document.getElementById('tickerInput').value = t;
-  runDebate();
-}
+document.getElementById('qp').innerHTML = Q.map(t=>'<button class="quick-pill" onclick="q(\''+t.t+'\')"><span class="d" style="background:'+CC[t.c]+'"></span>'+t.t+'</button>').join('');
+function q(t){document.getElementById('ti').value=t;runDebate()}
+function moat(t){return MOATS[t]||'Narrow'}
+function fm(m){if(!m)return'N/A';const b=m/1e9;return b>1000?'$'+(b/1000).toFixed(2)+'T':'$'+b.toFixed(1)+'B'}
 
-async function runDebate() {
-  const ticker = document.getElementById('tickerInput').value.trim().toUpperCase();
-  if (!ticker) return;
-  
-  document.getElementById('loading').classList.add('active');
-  document.getElementById('result').classList.remove('active');
-  document.getElementById('result').innerHTML = '';
-  document.getElementById('error').classList.remove('active');
-  document.getElementById('debateBtn').disabled = true;
+async function runDebate(){
+  const ti=document.getElementById('ti').value.trim().toUpperCase();
+  if(!ti)return;
+  document.getElementById('ld').classList.add('active');
+  document.getElementById('r').classList.remove('active');
+  document.getElementById('r').innerHTML='';
+  document.getElementById('er').classList.remove('active');
+  document.getElementById('db').disabled=true;
+  let D=null,S={};
 
-  try {
-    // Check cache or fetch
-    if (!TICKER_CACHE[ticker]) {
-      const resp = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?range=1d&interval=1d`);
-      if (!resp.ok) throw new Error('Ticker not found');
-      const chartData = await resp.json();
-      TICKER_CACHE[ticker] = chartData;
-    }
+  try{
+    const cr=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/'+ti+'?range=1y&interval=1d');
+    if(!cr.ok)throw new Error('Ticker not found');
+    const cd=await cr.json();
+    const m=cd.chart?.result?.[0]?.meta;
+    if(!m)throw new Error('No data available');
+    const p=m.regularMarketPrice,pc=m.previousClose||p,h52=m.fiftyTwoWeekHigh||p*1.3,l52=m.fiftyTwoWeekLow||p*0.7;
+    const dc=((p-pc)/pc*100).toFixed(2),pfh=((p-h52)/h52*100).toFixed(1),mc=m.marketCap||0,rp=((p-l52)/(h52-l52)*100).toFixed(0);
     
-    const data = TICKER_CACHE[ticker];
-    const meta = data.chart?.result?.[0]?.meta;
-    const q = data.chart?.result?.[0]?.indicators?.quote?.[0];
-    
-    if (!meta) throw new Error('No data available');
-    
-    const price = meta.regularMarketPrice;
-    const prevClose = meta.previousClose || price;
-    const high52 = meta.fiftyTwoWeekHigh || price * 1.3;
-    const low52 = meta.fiftyTwoWeekLow || price * 0.7;
-    const dayChange = ((price - prevClose) / prevClose * 100).toFixed(2);
-    const pctFromHigh = ((price - high52) / high52 * 100).toFixed(1);
-    const mktCap = meta.marketCap || 0;
-
-    // Now fetch stats from summary
-    let stats = {pe: 'N/A', eps: 'N/A', fwdPe: 'N/A'};
-    try {
-      const summResp = await fetch(`https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=financialData,defaultKeyStatistics,summaryDetail`);
-      const summ = await summResp.json();
-      const fd = summ.quoteSummary?.result?.[0]?.financialData || {};
-      const ks = summ.quoteSummary?.result?.[0]?.defaultKeyStatistics || {};
-      const sd = summ.quoteSummary?.result?.[0]?.summaryDetail || {};
-      
-      stats = {
-        pe: sd.trailingPE?.fmt || 'N/A',
-        fwdPe: sd.forwardPE?.fmt || 'N/A',
-        peg: ks.pegRatio?.fmt || 'N/A',
-        eps: ks.trailingEps?.fmt || 'N/A',
-        revGrowth: fd.revenueGrowth ? (fd.revenueGrowth.raw * 100).toFixed(1) + '%' : 'N/A',
-        gm: fd.grossMargins ? (fd.grossMargins.raw * 100).toFixed(1) + '%' : 'N/A',
-        opm: fd.operatingMargins ? (fd.operatingMargins.raw * 100).toFixed(1) + '%' : 'N/A',
-        pm: fd.profitMargins ? (fd.profitMargins.raw * 100).toFixed(1) + '%' : 'N/A',
-        fcf: fd.freeCashflow ? '$' + (fd.freeCashflow.raw / 1e9).toFixed(1) + 'B' : 'N/A',
-        de: fd.debtToEquity?.fmt || 'N/A',
-        roe: fd.returnOnEquity ? (fd.returnOnEquity.raw * 100).toFixed(1) + '%' : 'N/A',
-        divYield: sd.dividendYield ? (sd.dividendYield.raw * 100).toFixed(2) + '%' : 'None',
-        beta: sd.beta?.fmt || 'N/A',
-        target: fd.targetMeanPrice?.fmt || 'N/A',
-        targetHigh: fd.targetHighPrice?.fmt || 'N/A',
-        targetLow: fd.targetLowPrice?.fmt || 'N/A',
-        rec: fd.recommendationKey || 'N/A',
-        numAnalysts: fd.numberOfAnalystOpinions?.fmt || 'N/A'
+    try{
+      const sr=await fetch('https://query1.finance.yahoo.com/v10/finance/quoteSummary/'+ti+'?modules=financialData,defaultKeyStatistics,summaryDetail');
+      const sj=await sr.json();
+      const fd=sj.quoteSummary?.result?.[0]?.financialData||{};
+      const ks=sj.quoteSummary?.result?.[0]?.defaultKeyStatistics||{};
+      const sd=sj.quoteSummary?.result?.[0]?.summaryDetail||{};
+      S={
+        pe:sd.trailingPE?.fmt||'—',fwdPe:sd.forwardPE?.fmt||'—',peg:ks.pegRatio?.fmt||'—',
+        eps:ks.trailingEps?.fmt||'—',revGrowth:fd.revenueGrowth?(fd.revenueGrowth.raw*100).toFixed(1)+'%':'—',
+        gm:fd.grossMargins?(fd.grossMargins.raw*100).toFixed(1)+'%':'—',opm:fd.operatingMargins?(fd.operatingMargins.raw*100).toFixed(1)+'%':'—',
+        pm:fd.profitMargins?(fd.profitMargins.raw*100).toFixed(1)+'%':'—',
+        fcf:fd.freeCashflow?'$'+(fd.freeCashflow.raw/1e9).toFixed(1)+'B':'—',de:fd.debtToEquity?.fmt||'—',
+        roe:fd.returnOnEquity?(fd.returnOnEquity.raw*100).toFixed(1)+'%':'—',dy:sd.dividendYield?(sd.dividendYield.raw*100).toFixed(2)+'%':'None',
+        beta:sd.beta?.fmt||'—',targetMean:fd.targetMeanPrice?.raw,rec:fd.recommendationKey||'—',num:fd.numberOfAnalystOpinions?.fmt||'—'
       };
-    } catch(e) {}
-
-    displayDebate(ticker, price, dayChange, high52, low52, pctFromHigh, mktCap, stats);
-
-  } catch(e) {
-    document.getElementById('error').innerHTML = '❌ ' + e.message;
-    document.getElementById('error').classList.add('active');
+    }catch(e){}
+    D={t:ti,p,pc,h52,l52,dc,pfh,mc,ex:m.exchangeName||'NASDAQ',rp};
+  }catch(e){
+    document.getElementById('ert').textContent=e.message+'. Check the ticker.';
+    document.getElementById('er').classList.add('active');
+    document.getElementById('ld').classList.remove('active');
+    document.getElementById('db').disabled=false;
+    return;
   }
-  
-  document.getElementById('loading').classList.remove('active');
-  document.getElementById('debateBtn').disabled = false;
+  document.getElementById('ld').classList.remove('active');
+  document.getElementById('db').disabled=false;
+  render(D,S);
 }
 
-function formatMarketCap(mc) {
-  if (!mc) return 'N/A';
-  const b = mc / 1e9;
-  if (b > 1000) return '$' + (b/1000).toFixed(1) + 'T';
-  return '$' + b.toFixed(1) + 'B';
-}
+function buildAnalysts(D,S){
+  const p=D.p,fp=parseFloat(S.fwdPe)||0,peg=parseFloat(S.peg)||0,rv=parseFloat(S.revGrowth)||0;
+  const moatR=moat(D.t),beta=parseFloat(S.beta)||1,dy=S.dy,de=parseFloat(S.de)||0;
+  const tm=S.targetMean,upside=tm?((tm-p)/p*100).toFixed(0):null;
 
-function moatRating(ticker) {
-  const moats = {
-    'AAPL':'Wide', 'MSFT':'Wide', 'GOOGL':'Wide', 'AMZN':'Wide',
-    'META':'Narrow', 'NVDA':'Wide', 'TSLA':'Narrow', 'KO':'Wide',
-    'PG':'Wide', 'JNJ':'Wide', 'V':'Wide', 'MA':'Wide',
-    'PEP':'Wide', 'COST':'Wide', 'WMT':'Wide', 'CSCO':'Narrow',
-    'INTC':'Narrow', 'AMD':'Narrow', 'ABBV':'Wide', 'UNH':'Wide',
-    'HD':'Wide', 'LOW':'Wide', 'NKE':'Wide', 'DIS':'Narrow',
-    'BA':'Narrow', 'CAT':'Narrow', 'HON':'Narrow', 'MMM':'Narrow'
-  };
-  return moats[ticker] || 'Narrow';
-}
-
-function buildAnalysts(ticker, price, stats) {
-  const moat = moatRating(ticker);
-  const fwdPE = parseFloat(stats.fwdPe) || 0;
-  const peg = parseFloat(stats.peg) || 0;
-  const revGrowth = parseFloat(stats.revGrowth) || 0;
-  const fcf = stats.fcf;
-  const divYield = stats.divYield;
-  const gm = stats.gm;
-  const beta = stats.beta;
-  const target = stats.target;
-  
-  const p = price;
-  const upside = target !== 'N/A' ? ((parseFloat(target) - p) / p * 100).toFixed(0) + '%' : 'N/A';
-  
   return [
-    {
-      name: 'Warren B.',
-      role: 'Value Investor',
-      avatar: '🏦',
-      arg: fwdPE > 25 
-        ? `${ticker} at ${fwdPE}x forward earnings doesn't pass my first screen. A quality business at any price isn't value investing — it's speculation. I'd need a P/E below 20x and a decade of consistent ROE above 15% before I consider this position.`
-        : `${ticker} at ${fwdPE}x forward earnings with ${gm} gross margins and ${stats.roe} ROE is starting to look interesting. The price is reasonable, but I need to see 10 years of consistent free cash flow generation before I commit real capital. Patience is the investor's greatest advantage.`,
-      verdict: fwdPE < 20 ? 'BUY ▲' : (fwdPE < 30 ? 'HOLD ◆' : 'SELL ▼'),
-      vClass: fwdPE < 20 ? 'buy' : (fwdPE < 30 ? 'hold' : 'sell')
-    },
-    {
-      name: 'M. Burry',
-      role: 'Contrarian',
-      avatar: '📉',
-      arg: peg > 3 
-        ? `A PEG ratio of ${peg} tells me the market has priced in perfection and then some. When everyone already owns the stock, who's left to buy? The asymmetry here is terrible — limited upside, unlimited downside. I've seen this movie.`
-        : `PEG of ${peg} isn't outrageous, but that doesn't mean this is safe. I look for the catalyst nobody sees — regulatory risk, margin compression, competitive disruption. If I can't find a reason this drops 30%, I'm not shorting. But I'm not buying either.`,
-      verdict: peg > 3 ? 'SELL ▼' : (peg < 1.5 ? 'HOLD ◆' : 'HOLD ◆'),
-      vClass: peg > 3 ? 'sell' : 'hold'
-    },
-    {
-      name: 'C. Wood',
-      role: 'Growth Investor',
-      avatar: '🚀',
-      arg: `${ticker} is an innovation platform that the market is mispricing. With ${stats.revGrowth} revenue growth and a total addressable market that's still in its infancy, the ${fwdPE}x forward multiple is reasonable for a company that could double revenue in 3 years. The disruptive potential isn't priced in — it never is until it happens.`,
-      verdict: 'BUY ▲',
-      vClass: 'buy'
-    },
-    {
-      name: 'R. Dalio',
-      role: 'Macro Strategist',
-      avatar: '⚖️',
-      arg: `With a beta of ${beta}, ${ticker} is ${beta > 1 ? 'more volatile' : 'less volatile'} than the market. In the current macro environment, this asset needs to be sized appropriately within a diversified portfolio — no more than 2-3% allocation on a risk-parity basis. The fundamentals are ${parseFloat(stats.pe) < 30 ? 'reasonable' : 'stretched'}, but the macro tailwinds favor innovation in this cycle.`,
-      verdict: 'HOLD ◆',
-      vClass: 'hold'
-    },
-    {
-      name: 'P. Lynch',
-      role: 'GARP Investor',
-      avatar: '📊',
-      arg: `I look for a P/E equal to the growth rate. ${ticker} has a PEG of ${peg} — ${peg > 2 ? 'that means you're paying more for growth than you should. I want boring businesses I understand: consistent earnings, low debt, and a story that fits on a napkin.' : 'that's reasonable for a company with a clear growth trajectory. I like businesses that grow steadily without the hype.'} ${stats.divYield !== 'None' ? `A ${divYield} dividend is a nice bonus.` : 'No dividend, but good reinvestment opportunities.'}`,
-      verdict: peg < 2 ? 'BUY ▲' : (peg < 4 ? 'HOLD ◆' : 'SELL ▼'),
-      vClass: peg < 2 ? 'buy' : (peg < 4 ? 'hold' : 'sell')
-    },
-    {
-      name: 'B. Ackman',
-      role: 'Activist Investor',
-      avatar: '🎯',
-      arg: `${ticker} has a strong business model but I see significant value creation opportunities through capital allocation. The balance sheet ${stats.de !== 'N/A' ? `has ${stats.de} debt-to-equity` : 'is manageable'} — room for optimization. I'd push for share buybacks at these levels and operational efficiency improvements to close the gap between book value and market value. The assets are worth more than the market gives credit for.`,
-      verdict: fwdPE < 25 ? 'BUY ▲' : 'HOLD ◆',
-      vClass: fwdPE < 25 ? 'buy' : 'hold'
-    }
+    {n:'Warren Buffett',r:'Value · Berkshire Hathaway',e:'🏦',
+     a: fp>30||fp===0?D.t+' at '+(fp>0?fp+'x':'extreme')+' forward earnings fails my first screen. I look for businesses I understand with durable moats at reasonable prices. This is not that. The margin of safety is missing, and without it, you\'re not investing — you\'re speculating on sentiment.':
+       fp>20?D.t+' at '+fp+'x forward earnings with '+S.roe+' ROE and a '+moatR+' moat is close to my strike zone. I like the business fundamentals, but the price leaves little room for error. I\'d build a position slowly on any weakness below $'+(p*0.9).toFixed(0)+'.':
+       D.t+' at '+fp+'x forward earnings with '+S.roe+' ROE checks all the boxes. This offers a genuine margin of safety in a quality business. The kind of position I hold for decades.',
+     v:fp<20?'BUY ▲':(fp<30?'HOLD ◆':'SELL ▼'),vc:fp<20?'b':(fp<30?'h':'s')},
+    {n:'Michael Burry',r:'Contrarian · Scion Asset Mgmt',e:'📉',
+     a:peg>3||peg===0?'A PEG of '+(peg>0?peg:'extreme')+' tells me the market has priced in a perfect 10-year outcome. When the narrative is this universally loved, the asymmetry is terrible — limited upside, unlimited downside. The crowd is always wrong at the extremes.':
+       peg>1.5?'PEG of '+peg+' is elevated. The company may be good, but the price already reflects optimism. I see competitive risks the consensus is ignoring — the moat is narrower than the valuation suggests.':
+       'PEG of '+peg+' with '+S.gm+' margins and '+S.fcf+' FCF is reasonable. Not a screaming short. The fundamentals support the valuation, but I need asymmetry to act, and this setup doesn\'t have it.',
+     v:peg>3?'SELL ▼':(peg>1.5?'HOLD ◆':'HOLD ◆'),vc:peg>3?'s':'h'},
+    {n:'Cathie Wood',r:'Growth · ARK Invest',e:'🚀',
+     a:D.t+' is a transformative innovation platform the market is fundamentally mispricing. With '+S.revGrowth+' revenue growth and a total addressable market in its infancy, the valuation will look absurdly cheap in 5 years when revenue doubles or triples. Disruptive innovation is always underestimated in the early innings — by the time everyone sees it, the 10x has already happened. This is the exact moment to lean in.',
+     v:'BUY ▲',vc:'b'},
+    {n:'Ray Dalio',r:'Macro · Bridgewater Associates',e:'⚖️',
+     a:'With a beta of '+beta+', '+D.t+' is '+(beta>1?'high-beta — outperforms in risk-on, gets hit harder in downturns':'lower-beta — relative stability in turbulent periods')+'. In the current macro regime, size this '+(beta>1.5?'at 1-2% max on risk-parity':'at 3-5% as a core compounder')+'. The key risk is a regime change in interest rates or liquidity conditions.',
+     v:beta<1.3?'BUY ▲':'HOLD ◆',vc:beta<1.3?'b':'h'},
+    {n:'Peter Lynch',r:'GARP · Fidelity Magellan',e:'📊',
+     a:peg>2||peg===0?'I want the P/E to equal the growth rate. '+D.t+'\'s PEG of '+(peg>0?peg:'extreme')+' means you\'re overpaying for growth. Give me a boring business I understand — consistent earnings, low debt, a story on a napkin. If I can\'t explain it in 2 minutes, it\'s too complicated.':
+       peg<1?'A PEG of '+peg+' is a rare gem. '+D.t+' grows at '+S.revGrowth+' and trades below its growth rate. '+dy!=='None'?'The '+dy+' dividend adds a kicker.':'Reinvestment here compounds beautifully.':
+       'PEG of '+peg+' is fine. '+D.t+' has '+S.gm+' margins and '+S.fcf+' — decent growth at a fair price. Works as a steady compounder in a diversified portfolio.',
+     v:peg<1.5?'BUY ▲':(peg<3?'HOLD ◆':'SELL ▼'),vc:peg<1.5?'b':(peg<3?'h':'s')},
+    {n:'Bill Ackman',r:'Activist · Pershing Square',e:'🎯',
+     a:de>100?D.t+' has a debt-to-equity of '+de+' — too leveraged. The business may be sound, but the balance sheet limits options. I\'d push for deleveraging before any capital return program. Fix the foundation first.':
+       D.t+' has a clean balance sheet ('+de+' D/E) and '+S.fcf+' FCF. Significant value creation possible through buybacks at these levels. I see $5-10B+ in unrealized value through operational improvements. The sum-of-parts doesn\'t reflect underlying asset quality.',
+     v:fp<25&&de<60?'BUY ▲':'HOLD ◆',vc:fp<25&&de<60?'b':'h'}
   ];
 }
 
-function displayDebate(ticker, price, dayChange, high52, low52, pctFromHigh, mktCap, stats) {
-  const moat = moatRating(ticker);
-  const analysts = buildAnalysts(ticker, price, stats);
+function render(D,S){
+  const A=buildAnalysts(D,S);
+  const vb=A.filter(a=>a.vc==='b').length,vh=A.filter(a=>a.vc==='h').length,vs=A.filter(a=>a.vc==='s').length;
+  const fv=vb>=3?'BUY':(vs>=3?'SELL':'HOLD'),fc=vb>=3?'buy':(vs>=3?'sell':'hold'),fs=vb>=3?'▲':(vs>=3?'▼':'◆');
+  const up=parseFloat(D.dc)>=0;
   
-  const voteBuy = analysts.filter(a => a.vClass === 'buy').length;
-  const voteHold = analysts.filter(a => a.vClass === 'hold').length;
-  const voteSell = analysts.filter(a => a.vClass === 'sell').length;
-  
-  const finalVerdict = voteBuy >= 3 ? 'BUY ▲' : (voteSell >= 3 ? 'SELL ▼' : 'HOLD ◆');
-  const finalText = voteBuy >= 3 ? 'buy' : (voteSell >= 3 ? 'sell at $' + price.toFixed(2) : 'hold at $' + price.toFixed(2));
-  const finalClass = voteBuy >= 3 ? 'buy' : (voteSell >= 3 ? 'sell' : 'hold');
-  
-  const html = `
-    <div class="card">
-      <h2>🎯 ${ticker}</h2>
-      <div class="subtitle">Stock Debate · ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</div>
-      
-      <div style="font-size:2.5rem;font-weight:800;margin:1rem 0">
-        $${price.toFixed(2)}
-        <span style="font-size:1rem;font-weight:400;color:${parseFloat(dayChange) >= 0 ? '#4ade80' : '#e8001c'}">${parseFloat(dayChange) >= 0 ? '▲' : '▼'} ${Math.abs(parseFloat(dayChange)).toFixed(2)}% today</span>
-      </div>
-      <div class="subtitle" style="margin-top:-0.5rem">
-        ${formatMarketCap(mktCap)} · ${pctFromHigh}% from ATH · ${moat} Moat
-      </div>
-      
-      <div class="metrics">
-        <div class="metric"><div class="label">Forward P/E</div><div class="value">${stats.fwdPe}</div></div>
-        <div class="metric"><div class="label">PEG Ratio</div><div class="value">${stats.peg}</div></div>
-        <div class="metric"><div class="label">Rev Growth</div><div class="value ${parseFloat(stats.revGrowth) > 15 ? 'green' : ''}">${stats.revGrowth}</div></div>
-        <div class="metric"><div class="label">FCF</div><div class="value green">${stats.fcf}</div></div>
-        <div class="metric"><div class="label">Gross Margin</div><div class="value">${stats.gm}</div></div>
-        <div class="metric"><div class="label">Div Yield</div><div class="value yellow">${stats.divYield}</div></div>
-        <div class="metric"><div class="label">Debt/Equity</div><div class="value">${stats.de}</div></div>
-        <div class="metric"><div class="label">Beta</div><div class="value">${stats.beta}</div></div>
-      </div>
-      
-      <div style="margin-top:1rem;padding:0.8rem;background:#1a1a1a;border-radius:6px;font-size:0.85rem;line-height:1.5">
-        🐂 <strong style="color:#4ade80">Bull:</strong> ${ticker} benefits from strong secular tailwinds and durable competitive advantages in its core markets.<br>
-        🐻 <strong style="color:#e8001c">Risk:</strong> Valuation leaves little room for error — any slowdown in growth could trigger multiple compression.<br>
-        🎯 <strong>Wall St:</strong> <span style="color:#ffd700;text-transform:capitalize">${stats.rec}</span> · ${stats.numAnalysts} analysts · Target $${stats.target} (${targetUpside(price, stats.target)}%)
-      </div>
+  const h=`
+<div class="th">
+  <div class="th-t">
+    <div class="th-l">
+      <div class="th-tk">${D.t}<span class="m">${moat(D.t)} Moat</span></div>
+      <div class="th-d">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})} · ${D.ex}</div>
     </div>
-    
-    <div style="margin-bottom:2rem">
-      ${analysts.map(a => `
-        <div class="analyst">
-          <div class="name">${a.avatar} ${a.name}<span class="role"> · ${a.role}</span></div>
-          <div class="arg">${a.arg}</div>
-          <div class="verdict ${a.vClass}">${a.verdict}</div>
-        </div>
-      `).join('')}
+    <div class="th-p">
+      <div class="pv">$${D.p.toFixed(2)}</div>
+      <div class="ch ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(parseFloat(D.dc)).toFixed(2)}% today</div>
     </div>
-    
-    <div class="card">
-      <h3 style="text-align:center;font-size:1.2rem;margin-bottom:1rem">📊 PANEL VOTE</h3>
-      <div class="panel-vote">
-        <div class="vote-block buy"><div class="count">${voteBuy}</div><div class="label">BUY</div></div>
-        <div class="vote-block hold"><div class="count">${voteHold}</div><div class="label">HOLD</div></div>
-        <div class="vote-block sell"><div class="count">${voteSell}</div><div class="label">SELL</div></div>
+  </div>
+  <div class="th-m">
+    <span class="th-mi">Market Cap: <strong>${fm(D.mc)}</strong></span>
+    <span class="th-mi">52W Range: <strong>$${D.l52.toFixed(0)} — $${D.h52.toFixed(0)}</strong></span>
+    <span class="th-mi">From ATH: <strong>${D.pfh}%</strong></span>
+    <span class="th-mi">Sector: <strong>${S.sec||'N/A'}</strong></span>
+  </div>
+</div>
+
+<div class="mg">
+  <div class="mc"><div class="ml">Forward P/E</div><div class="mv">${S.fwdPe}</div></div>
+  <div class="mc"><div class="ml">PEG Ratio</div><div class="mv">${S.peg}</div></div>
+  <div class="mc"><div class="ml">Rev Growth</div><div class="mv g">${S.revGrowth}</div></div>
+  <div class="mc"><div class="ml">Free Cash Flow</div><div class="mv g">${S.fcf}</div></div>
+  <div class="mc"><div class="ml">Gross Margin</div><div class="mv">${S.gm}</div></div>
+  <div class="mc"><div class="ml">Div Yield</div><div class="mv y">${S.dy}</div></div>
+  <div class="mc"><div class="ml">Debt/Equity</div><div class="mv">${S.de}</div></div>
+  <div class="mc"><div class="ml">Beta</div><div class="mv">${S.beta}</div></div>
+</div>
+
+<div class="bb">
+  <div class="bb-item bull"><div class="bl">🐂 Bull Case</div><div class="bt">${D.t} benefits from strong secular tailwinds and durable competitive advantages. ${S.gm} gross margins and ${S.fcf} FCF provide significant strategic flexibility.</div></div>
+  <div class="bb-item bear"><div class="bl">🐻 Risk Factor</div><div class="bt">Valuation leaves limited room for error. Any slowdown in growth could trigger multiple compression. Competition and regulatory risks are non-zero.</div></div>
+</div>
+
+<div class="ws">
+  <span class="wl">🎯 Wall Street</span>
+  <span class="wr">${S.rec}</span>
+  <span class="wt">Target: ${S.targetMean?'$'+S.targetMean.toFixed(2):'N/A'} ${S.targetMean&&D.p?'('+(((S.targetMean-D.p)/D.p)*100).toFixed(0)+'% upside)':''}</span>
+  <span class="wn">${S.num} analysts</span>
+</div>
+
+<div class="asc">
+  ${A.map(a=>`
+  <div class="ac">
+    <div class="ach">
+      <div class="acl">
+        <div class="acav">${a.e}</div>
+        <div><div class="acni">${a.n}</div><div class="acro">${a.r}</div></div>
       </div>
-      <div class="final">
-        <div class="verdict-text" style="color:${finalClass === 'buy' ? '#4ade80' : (finalClass === 'sell' ? '#f87171' : '#fbbf24')}">🏆 ${finalVerdict}</div>
-        <div class="detail">${voteBuy} of 6 analysts recommend ${finalText}</div>
-      </div>
+      <div class="acv ${a.vc}">${a.v}</div>
     </div>
-  `;
-  
-  document.getElementById('result').innerHTML = html;
-  document.getElementById('result').classList.add('active');
+    <div class="acb">${a.a}</div>
+  </div>`).join('')}
+</div>
+
+<div class="ps">
+  <h3>📊 Panel Vote</h3>
+  <div class="pv">
+    <div class="pvb b"><div class="pvc">${vb}</div><div class="pvl">BUY</div></div>
+    <div class="pvb h"><div class="pvc">${vh}</div><div class="pvl">HOLD</div></div>
+    <div class="pvb s"><div class="pvc">${vs}</div><div class="pvl">SELL</div></div>
+  </div>
+  <div class="pf">
+    <div class="fv ${fc}">🏆 ${fv} ${fs}</div>
+    <div class="fd">${vb} of 6 analysts recommend ${vb>=3?'buy at $'+D.p.toFixed(2):(vs>=3?'sell at $'+D.p.toFixed(2):'hold at $'+D.p.toFixed(2))}</div>
+  </div>
+</div>`;
+  document.getElementById('r').innerHTML=h;
+  document.getElementById('r').classList.add('active');
 }
 
-function targetUpside(price, target) {
-  if (!target || target === 'N/A') return 'N/A';
-  return ((parseFloat(target) - price) / price * 100).toFixed(0);
-}
-
-document.getElementById('tickerInput').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') runDebate();
-});
+document.getElementById('ti').addEventListener('keypress',e=>{if(e.key==='Enter')runDebate()});
 </script>
 </body>
 </html>
